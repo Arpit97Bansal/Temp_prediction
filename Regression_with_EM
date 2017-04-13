@@ -1,0 +1,167 @@
+from numpy import matrix
+from numpy import linalg
+
+
+Train = []
+Train_tmax=[]
+Train_tmin=[]
+Y_tmax_m = []
+Y_tmin_m = []
+k=0
+def mod():
+    i=0
+    while(i<k):
+        if Train[i][1] == 'January':
+            Train[i][1] = 1
+        elif Train[i][1] == 'February':
+            Train[i][1] = 2
+        elif Train[i][1] == 'March':
+            Train[i][1] = 3
+        elif Train[i][1] == 'April':
+            Train[i][1] = 4
+        elif Train[i][1] == 'May':
+            Train[i][1] = 5
+        elif Train[i][1] == 'June':
+            Train[i][1] = 6
+        elif Train[i][1] == 'July':
+            Train[i][1] = 7
+        elif Train[i][1] == 'August':
+            Train[i][1] = 8
+        elif Train[i][1] == 'September':
+            Train[i][1] = 9
+        elif Train[i][1] == 'October':
+            Train[i][1] = 10
+        elif Train[i][1] == 'November':
+            Train[i][1] = 11
+        elif Train[i][1] == 'December':
+            Train[i][1] = 12
+            
+        Train[i][0]=int(Train[i][0])
+        
+        if(Train[i][2][0]=='M'):
+            Train[i][2]=Train[i-1][2]+0.5
+        else:
+            Train[i][2]=float(Train[i][2])
+            
+        if(Train[i][3][0]=='M'):
+            Train[i][3]=Train[i-1][3]+0.5
+        else:
+            Train[i][3]=float(Train[i][3])
+        Train_tmax.append([])
+        Train_tmin.append([])
+        j=0
+        while(j<4):
+            Train_tmax[i].append(0)
+            Train_tmin[i].append(0)
+            j=j+1
+        j=0
+        while(j<4):
+            Train_tmax[i][j]=Train[i][j]
+            Train_tmin[i][j]=Train[i][j]
+            Train_tmax[i][2]=1
+            Train_tmin[i][3]=1
+            j=j+1
+            
+        i=i+1
+
+def make_m():
+    i=0
+    while(i<k):
+        if(Train[i][2][0]=='M'):
+            Y_tmax_m.append(1)
+        else:
+            Y_tmax_m.append(0)
+            
+        if(Train[i][3][0]=='M'):
+            Y_tmin_m.append(1)
+        else:
+            Y_tmin_m.append(0)
+        i=i+1
+    
+def find_v_tmax():
+    Y=[]
+    i=0
+    while (i<k):
+        Y.append(0)
+        Y[i]=Train[i][2]
+        i=i+1
+    X_mat = matrix(Train_tmax)
+    Y_matT = matrix(Y)
+    Y_mat = Y_matT.T
+    X_matT= X_mat.T
+    X = X_matT*X_mat
+    X_inv=X.I
+    X1=X_matT*Y_mat
+    V=X_inv*X1
+    
+    i=0
+    while(i<k):
+        if(Y_tmax_m[i]):
+            cost = matrix(Train_tmax[i])*V
+            ans=cost[0]
+            Train_tmin[i][2]=float(ans)
+        i=i+1
+        
+def find_v_tmin():
+    Y=[]
+    i=0
+    while (i<k):
+        Y.append(0)
+        Y[i]=Train[i][3]
+        i=i+1
+    X_mat = matrix(Train_tmin)
+    Y_matT = matrix(Y)
+    Y_mat = Y_matT.T
+    X_matT= X_mat.T
+    X = X_matT*X_mat
+    X_inv=X.I
+    X1=X_matT*Y_mat
+    V=X_inv*X1
+    
+    i=0
+    while(i<k):
+        if(Y_tmin_m[i]):
+            cost = matrix(Train_tmin[i])*V
+            ans=cost[0]
+            #print(i)
+            #print(float(ans))
+            Train_tmax[i][3]=float(ans)
+        i=i+1
+
+if __name__ == '__main__':
+    k = raw_input()
+    k = int(k)
+    index = raw_input().strip().split()
+    i=0
+    while(i<k):
+        temp = raw_input().strip().split()
+        Train.append(temp)
+        #print(temp)
+        i=i+1
+    make_m()
+    mod()
+    i=0
+    while(i<50):
+        find_v_tmax()
+        find_v_tmin()
+        i=i+1
+    i=0
+    while(i<k):
+        if(Y_tmax_m[i]):
+            #print('Y_tmax_m')
+            #print(i)
+            #print(Train_tmin[i])
+            print(Train_tmin[i][2])
+        if(Y_tmin_m[i]):
+            #print('Y_tmin_m')
+            #print(i)
+            #print(Train_tmax[i])
+            print(Train_tmax[i][3])
+        i=i+1
+    #print(Train)
+    #print('.....................................................')
+    #print(Train_tmax)
+    #print('.....................................................')
+    #print(Train_tmin)
+    
+    
